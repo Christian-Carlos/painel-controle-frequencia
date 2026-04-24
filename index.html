@@ -1,0 +1,1847 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Painel Seguro - Arena Aquática</title>
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --line:#e3e8f0;
+      --text:#162033;
+      --muted:#667085;
+      --primary:#0b57d0;
+      --ok:#0f9d58;
+      --warn:#f9ab00;
+      --danger:#d93025;
+      --shadow:0 8px 24px rgba(22,32,51,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Arial,Helvetica,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
+    .wrap{max-width:1400px;margin:0 auto;padding:20px}
+    .card{
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+    .login-box{
+      max-width:430px;
+      margin:60px auto;
+      padding:28px;
+    }
+    h1,h2,h3{margin:0 0 10px}
+    .sub{color:var(--muted);font-size:14px;line-height:1.5}
+    .grid{display:grid;gap:14px}
+    .grid-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .grid-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .grid-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .field{display:flex;flex-direction:column;gap:6px}
+    label{font-size:13px;font-weight:700;color:var(--muted)}
+    input,select,textarea,button{
+      font:inherit;
+    }
+    input,select,textarea{
+      width:100%;
+      border:1px solid #cfd8e3;
+      border-radius:12px;
+      padding:12px 14px;
+      background:#fff;
+      outline:none;
+    }
+    input:focus,select:focus,textarea:focus{
+      border-color:var(--primary);
+      box-shadow:0 0 0 3px rgba(11,87,208,.12);
+    }
+    button{
+      border:none;
+      border-radius:12px;
+      padding:12px 16px;
+      cursor:pointer;
+      font-weight:700;
+    }
+    .btn-primary{background:var(--primary);color:#fff}
+    .btn-light{background:#eef3fb;color:var(--text)}
+    .btn-ok{background:var(--ok);color:#fff}
+    .btn-danger{background:var(--danger);color:#fff}
+    .btn-warn{background:var(--warn);color:#111}
+    .toolbar{
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      align-items:center;
+      margin-bottom:18px;
+      flex-wrap:wrap;
+    }
+    .hidden{display:none !important}
+    .header{
+      padding:18px 20px;
+      margin-bottom:16px;
+    }
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(7,minmax(0,1fr));
+      gap:12px;
+      margin:16px 0;
+    }
+    .stat{
+      padding:16px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:#fff;
+    }
+    .stat .n{
+      font-size:28px;
+      font-weight:800;
+      margin-top:8px;
+    }
+    .filters{
+      padding:18px;
+      margin-bottom:16px;
+    }
+    .table-wrap{
+      overflow:auto;
+      padding:0;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:1200px;
+    }
+    thead th{
+      position:sticky;
+      top:0;
+      background:#f8fafc;
+      z-index:2;
+    }
+    th,td{
+      padding:12px 10px;
+      border-bottom:1px solid var(--line);
+      text-align:left;
+      vertical-align:top;
+      font-size:14px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+    .b-pendente{background:#eef2f7;color:#344054}
+    .b-presente{background:rgba(15,157,88,.12);color:#0b6d3f}
+    .b-ausente{background:rgba(217,48,37,.12);color:#9e2018}
+    .b-justificada{background:rgba(249,171,0,.18);color:#7a5500}
+    .actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .actions button{
+      padding:8px 10px;
+      font-size:12px;
+      border-radius:10px;
+    }
+    .mini{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .topbar-right{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .avatar{
+      width:42px;height:42px;border-radius:50%;
+      background:#e8eef9;color:var(--primary);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:800;
+    }
+    .msg{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:12px;
+      font-size:14px;
+      display:none;
+    }
+    .login-loading{
+      margin-top:12px;
+      padding:12px 14px;
+      border-radius:12px;
+      font-size:14px;
+      display:none;
+      align-items:center;
+      gap:10px;
+      background:rgba(37,99,235,.10);
+      color:#1d4ed8;
+      border:1px solid rgba(37,99,235,.18);
+      font-weight:700;
+    }
+    .login-loading.show{
+      display:flex;
+    }
+    .login-spinner{
+      width:18px;
+      height:18px;
+      border:2px solid rgba(29,78,216,.18);
+      border-top-color:#1d4ed8;
+      border-radius:50%;
+      animation:spinLogin .8s linear infinite;
+      flex:0 0 18px;
+    }
+    @keyframes spinLogin{
+      to { transform: rotate(360deg); }
+    }
+    .msg.ok{display:block;background:rgba(15,157,88,.12);color:#0b6d3f}
+    .msg.erro{display:block;background:rgba(217,48,37,.12);color:#9e2018}
+    .muted{color:var(--muted)}
+    .audit{
+      padding:16px;
+      margin-top:16px;
+    }
+    .audit-list{
+      max-height:380px;
+      overflow:auto;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fff;
+    }
+    .audit-item{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+      font-size:14px;
+    }
+    .aluno-cell{
+      display:flex;
+      align-items:flex-start;
+      gap:12px;
+      min-width:280px;
+    }
+    .photo{
+      width:78px;
+      height:104px;
+      border-radius:10px;
+      object-fit:cover;
+      object-position:center top;
+      border:1px solid var(--line);
+      background:#f4f7fb;
+      flex:0 0 78px;
+    }
+    .photo-placeholder{
+      width:78px;
+      height:104px;
+      border-radius:10px;
+      border:1px solid var(--line);
+      background:#f4f7fb;
+      flex:0 0 78px;
+    }
+    
+    .clickable-aluno{
+      cursor:pointer;
+    }
+    .clickable-aluno:hover b{
+      text-decoration:underline;
+    }
+    .detail-overlay{
+      position:fixed;
+      inset:0;
+      background:rgba(16,24,40,.45);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:9999;
+    }
+    .detail-modal{
+      width:min(1100px, 100%);
+      max-height:90vh;
+      overflow:auto;
+      background:#fff;
+      border-radius:22px;
+      border:1px solid var(--line);
+      box-shadow:0 20px 60px rgba(0,0,0,.18);
+      padding:18px;
+    }
+    .detail-grid{
+      display:grid;
+      grid-template-columns:260px minmax(0,1fr);
+      gap:18px;
+      align-items:start;
+    }
+    .detail-photo{
+      width:96px;
+      height:128px;
+      border-radius:12px;
+      object-fit:cover;
+      object-position:center top;
+      border:1px solid var(--line);
+      background:#f4f7fb;
+    }
+    .detail-fields{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      margin-top:16px;
+    }
+    .detail-field{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:10px 12px;
+      background:#fff;
+    }
+    .detail-field .k{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+      margin-bottom:4px;
+    }
+    .detail-actions{
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      margin-top:16px;
+    }
+    .detail-observacao{
+      margin-top:12px;
+    }
+
+    .detail-summary-wrap{
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      margin-top:12px;
+      width:100%;
+    }
+    .detail-summary-cards{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:12px;
+      width:100%;
+    }
+    .detail-mini-card{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 10px;
+      background:#fff;
+      text-align:center;
+      min-height:76px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+    }
+    .detail-mini-card .k{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+      line-height:1.2;
+      text-align:center;
+    }
+    .detail-mini-card .v{
+      font-size:18px;
+      font-weight:800;
+      margin-top:6px;
+      line-height:1.1;
+      word-break:break-word;
+      text-align:center;
+    }
+    .detail-highlight{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px 14px;
+      background:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      box-sizing:border-box;
+      overflow:hidden;
+    }
+    .detail-highlight.alerta{
+      border-color:#f9ab00;
+      background:rgba(249,171,0,.12);
+    }
+    .detail-highlight.ok{
+      border-color:#d0d5dd;
+      background:#fff;
+    }
+    .detail-highlight.good{
+      border-color:rgba(15,157,88,.35);
+      background:rgba(15,157,88,.10);
+    }
+    .detail-highlight.warn{
+      border-color:rgba(249,171,0,.45);
+      background:rgba(249,171,0,.12);
+    }
+    .detail-highlight.bad{
+      border-color:rgba(217,48,37,.40);
+      background:rgba(217,48,37,.10);
+    }
+    .detail-highlight .title{
+      font-size:12px;
+      color:var(--muted);
+      font-weight:700;
+      line-height:1.2;
+      margin-bottom:4px;
+    }
+    .detail-highlight .value{
+      font-size:26px;
+      font-weight:800;
+      line-height:1;
+      white-space:nowrap;
+    }
+    .detail-highlight .subtext{
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.35;
+    }
+    .detail-highlight-left{
+      flex:1 1 auto;
+      min-width:0;
+    }
+    .detail-highlight-right{
+      flex:0 0 auto;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-width:72px;
+      padding-left:8px;
+    }
+
+
+    
+    .btn-cracha{
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      padding:12px 16px;
+      border-radius:14px;
+      text-decoration:none;
+      font-weight:800;
+      font-size:14px;
+      line-height:1;
+      color:#fff;
+      background:linear-gradient(135deg,#2563eb 0%, #1d4ed8 45%, #1e3a8a 100%);
+      box-shadow:0 10px 24px rgba(37,99,235,.22);
+      transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+      border:1px solid rgba(255,255,255,.18);
+    }
+    .btn-cracha:hover{
+      transform:translateY(-1px);
+      box-shadow:0 14px 28px rgba(37,99,235,.30);
+      filter:brightness(1.02);
+    }
+    .btn-cracha:active{
+      transform:translateY(0);
+      box-shadow:0 8px 18px rgba(37,99,235,.24);
+    }
+    .btn-cracha-icon{
+      width:18px;
+      height:18px;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      flex:0 0 18px;
+    }
+    .btn-cracha-wrap{
+      margin-top:12px;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .btn-cracha-note{
+      font-size:12px;
+      color:var(--muted);
+    }
+    .detail-history{
+      margin-top:18px;
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:14px;
+      background:#fff;
+    }
+    .detail-history-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+      flex-wrap:wrap;
+    }
+    .detail-history-title{
+      font-size:16px;
+      font-weight:800;
+    }
+    .detail-history-sub{
+      font-size:12px;
+      color:var(--muted);
+      margin-top:4px;
+    }
+    .detail-history-list{
+      display:grid;
+      gap:10px;
+    }
+    .detail-history-item{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px;
+      background:#fafafa;
+    }
+    .detail-history-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+    }
+    .detail-history-date{
+      font-weight:800;
+      font-size:14px;
+    }
+    .detail-history-grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px 14px;
+    }
+    .detail-history-k{
+      font-size:11px;
+      color:var(--muted);
+      font-weight:700;
+      margin-bottom:2px;
+    }
+    .detail-history-v{
+      font-size:13px;
+      font-weight:600;
+      word-break:break-word;
+    }
+
+    @media (max-width: 980px){
+      .grid-4,.grid-3,.grid-2,.stats{grid-template-columns:1fr}
+      .wrap{padding:12px}
+      .header,.filters,.audit,.login-box{padding:16px}
+      .detail-grid{grid-template-columns:1fr}
+      .detail-summary-wrap{max-width:100%}
+      .detail-summary-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .detail-highlight{
+        flex-direction:row;
+        align-items:center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section id="loginScreen" class="card login-box">
+      <h1>Painel Seguro</h1>
+      <div class="sub">Arena Aquática · consulta segura da base, filtros por turno e horário, e lançamento controlado de frequência.</div>
+
+      <div class="grid" style="margin-top:18px;">
+        <div class="field">
+          <label>Usuário ou matrícula</label>
+          <input type="text" id="loginUsuario" placeholder="Digite seu usuário ou matrícula" />
+        </div>
+        <div class="field">
+          <label>Senha</label>
+          <input type="password" id="loginSenha" placeholder="Digite sua senha" />
+        </div>
+        <button type="button" class="btn-cracha" onclick="entrar()">Entrar</button>
+      </div>
+
+      <div id="loginMsg" class="msg"></div>
+      <div id="loginLoading" class="login-loading">
+        <span class="login-spinner"></span>
+        <span id="loginLoadingText">Autenticando...</span>
+      </div>
+    </section>
+
+    <section id="painelScreen" class="hidden">
+      <div class="card header">
+        <div class="toolbar">
+          <div>
+            <h2>Painel de Inspeção e Frequência</h2>
+            <div class="sub">Base principal: <b>Listageral</b> · frequência operacional: <b>frequencia</b></div>
+          </div>
+          <div class="topbar-right">
+            <div class="avatar" id="avatarUser">A</div>
+            <div>
+              <div><b id="nomeUsuario">-</b></div>
+              <div class="mini" id="perfilUsuario">-</div>
+            </div>
+            <button class="btn-cracha" id="btnOperadores" onclick="abrirOperadores()" style="display:none;">Gerenciar Operadores</button>
+            <button class="btn-cracha" onclick="carregarAuditoria()">Auditoria</button>
+            <button class="btn-danger" onclick="sair()">Sair</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="card filters">
+        <div class="grid grid-4">
+          <div class="field">
+            <label>Data da aula</label>
+            <input type="date" id="fDataAula">
+          </div>
+          <div class="field">
+            <label>Turno</label>
+            <select id="fTurno"><option value="">Todos</option></select>
+          </div>
+          <div class="field">
+            <label>Horário</label>
+            <select id="fHorario"><option value="">Todos</option></select>
+          </div>
+          <div class="field">
+            <label>Modalidade</label>
+            <select id="fModalidade"><option value="">Todas</option></select>
+          </div>
+          <div class="field">
+            <label>Dias</label>
+            <select id="fDias"><option value="">Todos</option></select>
+          </div>
+          <div class="field">
+            <label>Matrícula</label>
+            <select id="fMatricula"><option value="">Todas</option></select>
+          </div>
+          <div class="field">
+            <label>Busca</label>
+            <input type="text" id="fBusca" placeholder="Nome, ID, RG/CPF, e-mail..." />
+          </div>
+        </div>
+
+        <div class="actions" style="margin-top:14px;">
+          <button class="btn-cracha" onclick="PAGINA_ATUAL=1; consultar()">Consultar</button>
+          <button class="btn-cracha" onclick="limparFiltros()">Limpar filtros</button>
+          <button class="btn-ok" onclick="acaoEmMassa('PRESENTE')">Marcar todos visíveis como presente</button>
+        </div>
+
+        <div id="painelMsg" class="msg"></div>
+        <div id="painelHint" class="mini" style="margin-top:8px;"></div>
+        <div id="painelLoading" class="mini" style="margin-top:8px;"></div>
+
+        <div class="stats">
+          <div class="stat"><div class="mini">Total</div><div class="n" id="stTotal">0</div></div>
+          <div class="stat"><div class="mini">Presentes</div><div class="n" id="stPresentes">0</div></div>
+          <div class="stat"><div class="mini">Ausentes</div><div class="n" id="stAusentes">0</div></div>
+          <div class="stat"><div class="mini">Justificadas</div><div class="n" id="stJustificadas">0</div></div>
+          <div class="stat"><div class="mini">Ativos</div><div class="n" id="stAtivos">0</div></div>
+          <div class="stat"><div class="mini">Inativos</div><div class="n" id="stInativos">0</div></div>
+          <div class="stat"><div class="mini">Pendentes</div><div class="n" id="stPendentes">0</div></div>
+        </div>
+      </div>
+
+      <div class="toolbar" style="margin:10px 4px 8px 4px;">
+        <div class="mini" id="pageInfo">Página 1 de 1 · 0 registros</div>
+        <div class="actions">
+          <button type="button" id="btnPaginaAnterior" class="btn-cracha" onclick="paginaAnterior()">Anterior</button>
+          <button type="button" id="btnProximaPagina" class="btn-cracha" onclick="proximaPagina()">Próxima</button>
+        </div>
+      </div>
+      <div class="card table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Aluno</th>
+              <th>Turno</th>
+              <th>Horário</th>
+              <th>Modalidade</th>
+              <th>Dias</th>
+              <th>Matrícula</th>
+              <th>Status</th>
+              <th>Observação</th>
+              <th>Ações</th>
+            </tr>
+          </thead>
+          <tbody id="tbodyRegistros">
+            <tr><td colspan="9" class="muted">Nenhum dado carregado.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div id="auditBox" class="card audit hidden">
+        <div class="toolbar">
+          <div>
+            <h3>Auditoria do sistema</h3>
+            <div class="sub">Ações de login, consulta e alteração de frequência.</div>
+          </div>
+          <button class="btn-cracha" onclick="toggleAuditoria(false)">Fechar</button>
+        </div>
+        <div id="auditList" class="audit-list"></div>
+      </div>
+    
+      <div id="detailOverlay" class="detail-overlay hidden">
+        <div class="detail-modal">
+          <div class="toolbar">
+            <div>
+              <h3>Ficha do aluno</h3>
+              <div class="sub">Dados completos da Listageral e lançamento de frequência usando a mesma estrutura da aba frequencia.</div>
+            </div>
+            <button class="btn-cracha" onclick="fecharDetalheAluno()">Fechar</button>
+          </div>
+
+          <div id="detailContent" class="muted">Carregando dados do aluno...</div>
+        </div>
+      </div>
+
+    
+      <div id="trocaSenhaOverlay" class="detail-overlay hidden">
+        <div class="detail-modal" style="max-width:520px;">
+          <div class="toolbar">
+            <div>
+              <h3>Troca obrigatória de senha</h3>
+              <div class="sub">Defina sua nova senha para continuar.</div>
+            </div>
+          </div>
+          <div class="grid" style="margin-top:8px;">
+            <div class="field">
+              <label>Nova senha</label>
+              <input type="password" id="novaSenhaPrimeiroAcesso" />
+            </div>
+            <div class="field">
+              <label>Confirmar senha</label>
+              <input type="password" id="confirmarSenhaPrimeiroAcesso" />
+            </div>
+            <button type="button" class="btn-cracha" onclick="salvarPrimeiraSenha()">Salvar nova senha</button>
+            <div id="trocaSenhaMsg" class="msg"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="operadoresOverlay" class="detail-overlay hidden">
+        <div class="detail-modal" style="max-width:980px;">
+          <div class="toolbar">
+            <div>
+              <h3>Gerenciar Operadores</h3>
+              <div class="sub">Cadastro interno de operadores com troca obrigatória de senha no primeiro acesso.</div>
+            </div>
+            <button type="button" class="btn-cracha" onclick="fecharOperadores()">Fechar</button>
+          </div>
+
+          <div class="card" style="padding:16px; margin-top:10px;">
+            <div class="grid grid-3">
+              <div class="field">
+                <label>Matrícula</label>
+                <input type="text" id="opMatricula" />
+              </div>
+              <div class="field">
+                <label>Nome</label>
+                <input type="text" id="opNome" />
+              </div>
+              <div class="field">
+                <label>Senha inicial</label>
+                <input type="password" id="opSenha" />
+              </div>
+              <div class="field">
+                <label>Perfil</label>
+                <select id="opPerfil">
+                  <option value="OPERADOR">OPERADOR</option>
+                  <option value="ADMIN">ADMIN</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Status</label>
+                <select id="opStatus">
+                  <option value="ATIVO">ATIVO</option>
+                  <option value="INATIVO">INATIVO</option>
+                </select>
+              </div>
+              <input type="hidden" id="opMatriculaOriginal" />
+              <div class="field">
+                <label>Trocar senha no primeiro acesso</label>
+                <select id="opTrocarSenha">
+                  <option value="SIM">SIM</option>
+                  <option value="NÃO">NÃO</option>
+                </select>
+              </div>
+              
+            </div>
+
+            <div class="actions" style="margin-top:14px;">
+              <button type="button" class="btn-cracha" id="btnSalvarOperador" onclick="salvarOperador()">Salvar operador</button>
+              <button type="button" class="btn-cracha" onclick="limparFormularioOperador()">Limpar</button>
+            </div>
+            <div id="operadorMsg" class="msg"></div>
+          </div>
+
+          <div class="card table-wrap" style="margin-top:14px;">
+            <table>
+              <thead>
+                <tr>
+                  <th>Matrícula</th>
+                  <th>Nome</th>
+                  <th>Perfil</th>
+                  <th>Status</th>
+                  <th>Trocar senha</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyOperadores">
+                <tr><td colspan="6" class="muted">Nenhum operador carregado.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <script>
+    let TOKEN = '';
+    let USUARIO = null;
+    let REGISTROS_ATUAIS = [];
+    let DETALHE_ATUAL = null;
+    let OPERADORES_CACHE = [];
+    let BUSCA_TIMEOUT = null;
+    let PAGINA_ATUAL = 1;
+    let TOTAL_PAGINAS = 1;
+    let ULTIMA_CONSULTA_ID = 0;
+    const LIMITE_POR_PAGINA = 60;
+
+
+    function configurarEnterLogin(){
+      ['loginUsuario','loginSenha'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el){
+          el.addEventListener('keydown', function(e){
+            if(e.key === 'Enter'){
+              e.preventDefault();
+              entrar();
+            }
+          });
+        }
+      });
+    }
+
+    function hojeInput(){
+      const d = new Date();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${d.getFullYear()}-${mm}-${dd}`;
+    }
+
+    function formatarDataParaBackend(valor){
+      if(!valor) return '';
+      const [ano, mes, dia] = valor.split('-');
+      return `${dia}/${mes}/${ano}`;
+    }
+
+    function escapeHtml(text){
+      return String(text ?? '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    function setBusy(isBusy){
+      document.body.style.cursor = isBusy ? 'wait' : '';
+    }
+
+    function mostrarMsg(id, tipo, texto){
+      const el = document.getElementById(id);
+      el.className = `msg ${tipo}`;
+      el.textContent = texto;
+    }
+
+    function limparMsg(id){
+      const el = document.getElementById(id);
+      el.className = 'msg';
+      el.textContent = '';
+    }
+
+    function setLoginLoading(show, texto = 'Autenticando...'){
+      const box = document.getElementById('loginLoading');
+      const txt = document.getElementById('loginLoadingText');
+      const btn = document.querySelector('#loginScreen button[onclick="entrar()"], #loginScreen button[onclick="entrar();"], #loginScreen button[type="button"]');
+
+      if (txt) txt.textContent = texto;
+      if (box) box.classList.toggle('show', !!show);
+      if (btn) {
+        btn.disabled = !!show;
+        btn.style.opacity = show ? '0.75' : '';
+        btn.style.pointerEvents = show ? 'none' : '';
+      }
+    }
+
+    function setLoading(texto){
+      document.getElementById('painelLoading').textContent = texto || '';
+    }
+
+    function atualizarPaginacao(pagina, totalPaginas, totalRegistros){
+      PAGINA_ATUAL = Number(pagina || 1);
+      TOTAL_PAGINAS = Number(totalPaginas || 1);
+
+      const info = document.getElementById('pageInfo');
+      if(info){
+        info.textContent = `Página ${PAGINA_ATUAL} de ${TOTAL_PAGINAS} · ${totalRegistros || 0} registros`;
+      }
+
+      const btnAnt = document.getElementById('btnPaginaAnterior');
+      const btnProx = document.getElementById('btnProximaPagina');
+
+      if(btnAnt) btnAnt.disabled = PAGINA_ATUAL <= 1;
+      if(btnProx) btnProx.disabled = PAGINA_ATUAL >= TOTAL_PAGINAS;
+    }
+
+    function paginaAnterior(){
+      if(PAGINA_ATUAL > 1){
+        consultar(PAGINA_ATUAL - 1);
+      }
+    }
+
+    function proximaPagina(){
+      if(PAGINA_ATUAL < TOTAL_PAGINAS){
+        consultar(PAGINA_ATUAL + 1);
+      }
+    }
+
+    function popularSelect(id, lista){
+      const sel = document.getElementById(id);
+      const atual = sel.value;
+      sel.innerHTML = '<option value="">Todos</option>';
+      (lista || []).forEach(v => {
+        const op = document.createElement('option');
+        op.value = v;
+        op.textContent = v;
+        sel.appendChild(op);
+      });
+      sel.value = atual;
+    }
+
+    function badgeStatus(status){
+      const bruto = String(status || '').trim();
+      const st = bruto
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toUpperCase();
+
+      if(st === 'PRESENTE') return '<span class="badge b-presente">PRESENTE</span>';
+      if(st === 'ATIVO') return '<span class="badge b-presente">ATIVO</span>';
+      if(st === 'AUSENTE') return '<span class="badge b-ausente">AUSENTE</span>';
+      if(st === 'INATIVO') return '<span class="badge b-ausente">INATIVO</span>';
+      if(st === 'AUSENCIA JUSTIFICADA' || st === 'JUSTIFICADA' || st === 'FALTA JUSTIFICADA') return '<span class="badge b-justificada">AUSÊNCIA JUSTIFICADA</span>';
+      return '<span class="badge b-pendente">PENDENTE</span>';
+    }
+
+    function entrar(){
+      limparMsg('loginMsg');
+      setLoginLoading(false);
+
+      const usuario = document.getElementById('loginUsuario').value.trim();
+      const senha = document.getElementById('loginSenha').value.trim();
+
+      if(!usuario || !senha){
+        mostrarMsg('loginMsg','erro','Informe usuário/matrícula e senha.');
+        return;
+      }
+
+      setLoginLoading(true, 'Autenticando...');
+      setBusy(true);
+
+      google.script.run
+        .withSuccessHandler(res => {
+          setBusy(false);
+
+          if(!res || !res.ok){
+            setLoginLoading(false);
+            mostrarMsg('loginMsg','erro', (res && res.mensagem) || 'Falha no login.');
+            return;
+          }
+
+          setLoginLoading(true, 'Entrando no sistema...');
+
+          TOKEN = res.token;
+          USUARIO = res.usuario;
+
+          document.getElementById('loginScreen').classList.add('hidden');
+          document.getElementById('painelScreen').classList.remove('hidden');
+          document.getElementById('nomeUsuario').textContent = USUARIO.nome || '-';
+          document.getElementById('perfilUsuario').textContent = `${USUARIO.perfil || '-'} · ${USUARIO.usuario || '-'}`;
+          document.getElementById('avatarUser').textContent = (USUARIO.nome || 'U').substring(0,1).toUpperCase();
+          document.getElementById('btnOperadores').style.display = (USUARIO.perfil === 'ADMIN' ? 'inline-block' : 'none');
+          document.getElementById('fDataAula').value = hojeInput();
+
+          if (res.trocaSenhaObrigatoria) {
+            setLoginLoading(false);
+            document.getElementById('trocaSenhaOverlay').classList.remove('hidden');
+            document.getElementById('painelMsg') && limparMsg('painelMsg');
+            return;
+          }
+
+          setLoginLoading(false);
+          inicializarPainelRapido();
+        })
+        .withFailureHandler(erro => {
+          setBusy(false);
+          setLoginLoading(false);
+          mostrarMsg('loginMsg','erro', (erro && erro.message) || 'Falha inesperada no login.');
+        })
+        .loginPainel({ usuario, senha });
+    }
+
+    function sair(){
+      const finalizarSaida = () => {
+        TOKEN = '';
+        USUARIO = null;
+        REGISTROS_ATUAIS = [];
+        DETALHE_ATUAL = null;
+        OPERADORES_CACHE = [];
+        PAGINA_ATUAL = 1;
+        TOTAL_PAGINAS = 1;
+
+        const painel = document.getElementById('painelScreen');
+        const login = document.getElementById('loginScreen');
+        const troca = document.getElementById('trocaSenhaOverlay');
+        const ops = document.getElementById('operadoresOverlay');
+        const detalhe = document.getElementById('detailOverlay');
+        const audit = document.getElementById('auditBox');
+
+        if (painel) painel.classList.add('hidden');
+        if (login) login.classList.remove('hidden');
+        if (troca) troca.classList.add('hidden');
+        if (ops) ops.classList.add('hidden');
+        if (detalhe) detalhe.classList.add('hidden');
+        if (audit) audit.classList.add('hidden');
+
+        const tbody = document.getElementById('tbodyRegistros');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="9" class="muted">Nenhum dado carregado.</td></tr>';
+
+        const pageInfo = document.getElementById('pageInfo');
+        if (pageInfo) pageInfo.textContent = 'Página 1 de 1 · 0 registros';
+
+        ['loginUsuario','loginSenha','novaSenhaPrimeiroAcesso','confirmarSenhaPrimeiroAcesso'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+
+        ['loginMsg','painelMsg','operadorMsg','trocaSenhaMsg'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) { el.className = 'msg'; el.textContent = ''; }
+        });
+
+        setLoginLoading(false);
+        const hint = document.getElementById('painelHint');
+        if (hint) hint.textContent = '';
+
+        renderResumo({});
+        document.body.style.overflow = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      };
+
+      if(!TOKEN){
+        finalizarSaida();
+        return;
+      }
+
+      google.script.run
+        .withSuccessHandler(() => finalizarSaida())
+        .withFailureHandler(() => finalizarSaida())
+        .logoutPainel(TOKEN);
+    }
+
+    function agendarConsulta(delay = 180){
+      if (BUSCA_TIMEOUT) clearTimeout(BUSCA_TIMEOUT);
+      BUSCA_TIMEOUT = setTimeout(() => {
+        PAGINA_ATUAL = 1;
+        consultar();
+      }, delay);
+    }
+
+    function configurarEventosFiltros(){
+      ['fDataAula','fTurno','fHorario','fModalidade','fDias','fMatricula'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el){
+          el.onchange = () => {
+            PAGINA_ATUAL = 1;
+            agendarConsulta(120);
+          };
+        }
+      });
+
+      const busca = document.getElementById('fBusca');
+      if(busca){
+        busca.onkeydown = (e) => {
+          if(e.key === 'Enter'){
+            if (BUSCA_TIMEOUT) clearTimeout(BUSCA_TIMEOUT);
+            PAGINA_ATUAL = 1;
+            consultar();
+          }
+        };
+        busca.oninput = () => {
+          agendarConsulta(220);
+        };
+      }
+    }
+
+    function aplicarFiltrosPainel(filtros){
+      popularSelect('fTurno', (filtros && filtros.turnos) || []);
+      popularSelect('fHorario', (filtros && filtros.horarios) || []);
+      popularSelect('fModalidade', (filtros && filtros.modalidades) || []);
+      popularSelect('fDias', (filtros && filtros.dias) || []);
+      popularSelect('fMatricula', (filtros && filtros.matriculas) || []);
+      document.getElementById('painelHint').textContent = '';
+    }
+
+    function carregarFiltros(){
+      google.script.run
+        .withSuccessHandler(res => {
+          if(!res || !res.ok){
+            mostrarMsg('painelMsg','erro', (res && res.mensagem) || 'Erro ao carregar filtros.');
+            document.getElementById('painelHint').textContent = 'Verifique se as abas Listageral e frequencia existem com esses nomes exatos.';
+            return;
+          }
+
+          aplicarFiltrosPainel(res.filtros || {});
+          limparMsg('painelMsg');
+        })
+        .withFailureHandler(erro => {
+          mostrarMsg('painelMsg','erro', (erro && erro.message) || 'Erro inesperado ao carregar filtros.');
+        })
+        .obterFiltrosPainel(TOKEN);
+    }
+
+    function limparFiltros(){
+      document.getElementById('fTurno').value = '';
+      document.getElementById('fHorario').value = '';
+      document.getElementById('fModalidade').value = '';
+      document.getElementById('fDias').value = '';
+
+      document.getElementById('fMatricula').value = '';
+      document.getElementById('fBusca').value = '';
+      document.getElementById('fDataAula').value = hojeInput();
+      PAGINA_ATUAL = 1;
+          consultar();
+    }
+
+    function montarFiltros(){
+      return {
+        dataAula: formatarDataParaBackend(document.getElementById('fDataAula').value),
+        turno: document.getElementById('fTurno').value,
+        horario: document.getElementById('fHorario').value,
+        modalidade: document.getElementById('fModalidade').value,
+        dias: document.getElementById('fDias').value,
+
+        matricula: document.getElementById('fMatricula').value,
+        busca: document.getElementById('fBusca').value.trim()
+      };
+    }
+
+    function aplicarConsultaPainel(res){
+      if(!res || !res.ok){
+        mostrarMsg('painelMsg','erro', (res && res.mensagem) || 'Erro ao consultar.');
+        renderTabela([]);
+        renderResumo({});
+        atualizarPaginacao(1, 1, 0);
+        return;
+      }
+
+      REGISTROS_ATUAIS = res.registros || [];
+      renderTabela(REGISTROS_ATUAIS);
+      renderResumo(res.resumo || {});
+      atualizarPaginacao(res.pagina || 1, res.totalPaginas || 1, res.total || 0);
+      mostrarMsg('painelMsg','ok', `Consulta carregada com sucesso. Total encontrado: ${res.total || 0}`);
+    }
+
+    function consultar(pagina = 1){
+      if (BUSCA_TIMEOUT) clearTimeout(BUSCA_TIMEOUT);
+      limparMsg('painelMsg');
+      document.getElementById('painelHint').textContent = '';
+      const filtros = montarFiltros();
+      filtros.pagina = pagina;
+      filtros.limite = LIMITE_POR_PAGINA;
+      const consultaId = ++ULTIMA_CONSULTA_ID;
+      setLoading('Carregando lista de alunos...');
+      setBusy(true);
+
+      google.script.run
+        .withSuccessHandler(res => {
+          if (consultaId !== ULTIMA_CONSULTA_ID) return;
+          setBusy(false);
+          setLoading('');
+          aplicarConsultaPainel(res);
+        })
+        .withFailureHandler(erro => {
+          if (consultaId !== ULTIMA_CONSULTA_ID) return;
+          setBusy(false);
+          setLoading('');
+          mostrarMsg('painelMsg','erro', (erro && erro.message) || 'Erro inesperado ao consultar.');
+          renderTabela([]);
+          renderResumo({});
+          atualizarPaginacao(1, 1, 0);
+        })
+        .buscarPainel(TOKEN, filtros);
+    }
+
+    function renderResumo(r){
+      document.getElementById('stTotal').textContent = r.total || 0;
+      document.getElementById('stPresentes').textContent = r.presentes || 0;
+      document.getElementById('stAusentes').textContent = r.ausentes || 0;
+      document.getElementById('stJustificadas').textContent = r.justificadas || 0;
+      document.getElementById('stAtivos').textContent = r.ativos || 0;
+      document.getElementById('stInativos').textContent = r.inativos || 0;
+      document.getElementById('stPendentes').textContent = r.pendentes || 0;
+    }
+
+    function renderTabela(lista){
+      const tbody = document.getElementById('tbodyRegistros');
+
+      if(!lista || !lista.length){
+        tbody.innerHTML = '<tr><td colspan="9" class="muted">Nenhum registro encontrado para os filtros informados.</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = lista.map((item, idx) => {
+        const foto = item.foto
+          ? `<img src="${escapeHtml(item.foto)}" class="photo" alt="Foto do aluno" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">`
+          : '';
+        const fotoFallback = `<div class="photo-placeholder" style="${item.foto ? 'display:none;' : ''}"></div>`;
+        const obsId = `obs_${idx}`;
+        const btnPresente = `btn_presente_${idx}`;
+        const btnAusente = `btn_ausente_${idx}`;
+        const btnJust = `btn_just_${idx}`;
+
+        return `
+          <tr>
+            <td>
+              <div class="aluno-cell clickable-aluno" onclick="abrirDetalheAluno(${idx})">
+                ${foto}
+                ${fotoFallback}
+                <div>
+                  <b>${escapeHtml(item.nome)}</b><br>
+                  <span class="mini">ID: ${escapeHtml(item.alunoId || '-')}</span><br>
+                  <span class="mini">RG/CPF: ${escapeHtml(item.rgCpf || '-')}</span><br>
+                  <span class="mini">E-mail: ${escapeHtml(item.email || '-')}</span>
+                </div>
+              </div>
+            </td>
+            <td>${escapeHtml(item.turno || '-')}</td>
+            <td>${escapeHtml(item.horario || '-')}</td>
+            <td>${escapeHtml(item.modalidade || '-')}</td>
+            <td>${escapeHtml(item.dias || '-')}</td>
+            <td>
+              <span class="mini">Matrícula: ${escapeHtml(item.matricula || '-')}</span>
+            </td>
+            <td>${badgeStatus(item.statusFrequencia)}</td>
+            <td>
+              <textarea id="${obsId}" rows="2" placeholder="Observação">${escapeHtml(item.observacao || '')}</textarea>
+              <div class="mini">Última atualização: ${escapeHtml(item.ultimaAtualizacao || '-')}</div>
+            </td>
+            <td>
+              <div class="actions">
+                <button id="${btnPresente}" class="btn-ok" onclick="salvarLinha(${idx}, 'PRESENTE', this)">Presente</button>
+                <button id="${btnAusente}" class="btn-danger" onclick="salvarLinha(${idx}, 'AUSENTE', this)">Ausente</button>
+                <button id="${btnJust}" class="btn-warn" onclick="salvarLinha(${idx}, 'AUSENCIA JUSTIFICADA', this)">Justificada</button>
+              </div>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    
+    function abrirDetalheAluno(idx){
+      const item = REGISTROS_ATUAIS[idx];
+      if(!item) return;
+
+      document.getElementById('detailOverlay').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      document.getElementById('detailContent').innerHTML = '<div class="muted">Carregando dados do aluno...</div>';
+
+      google.script.run
+        .withSuccessHandler(res => {
+          if(!res || !res.ok){
+            document.getElementById('detailContent').innerHTML = `<div class="msg erro" style="display:block;">${escapeHtml((res && res.mensagem) || 'Erro ao abrir ficha do aluno.')}</div>`;
+            return;
+          }
+
+          DETALHE_ATUAL = res.aluno;
+          renderDetalheAluno(res.aluno);
+        })
+        .withFailureHandler(erro => {
+          document.getElementById('detailContent').innerHTML = `<div class="msg erro" style="display:block;">${escapeHtml((erro && erro.message) || 'Falha inesperada ao abrir a ficha do aluno.')}</div>`;
+        })
+        .obterDetalheAluno(TOKEN, {
+          rowBase: item.rowBase,
+          dataAula: formatarDataParaBackend(document.getElementById('fDataAula').value)
+        });
+    }
+
+    function fecharDetalheAluno(){
+      DETALHE_ATUAL = null;
+      const overlay = document.getElementById('detailOverlay');
+      if (overlay) overlay.classList.add('hidden');
+      document.body.style.overflow = '';
+    }
+
+    function renderDetalheAluno(aluno){
+      const foto = aluno.foto
+        ? `<img src="${escapeHtml(aluno.foto)}" class="detail-photo" alt="Foto do aluno" loading="lazy">`
+        : `<div class="detail-photo"></div>`;
+
+      const resumo = aluno.resumoHistorico || {};
+      const percentual = Number(resumo.percentualPresenca || 0);
+      const totalLancamentos = Number(resumo.totalLancamentos || 0);
+      const alertaTexto = resumo.alertaFrequencia || '';
+      const pcdTexto = String(aluno.pcd || '').trim() || 'Não informado';
+
+      let classeAlerta = 'ok';
+      if (totalLancamentos >= 4 && percentual < 75) classeAlerta = 'bad';
+      else if (totalLancamentos >= 4 && percentual < 85) classeAlerta = 'warn';
+      else if (totalLancamentos > 0) classeAlerta = 'good';
+
+      const resumoHtml = `
+        <div class="detail-summary-wrap">
+          <div class="detail-summary-cards">
+            <div class="detail-mini-card">
+              <div class="k">Presenças</div>
+              <div class="v">${Number(resumo.presentes || 0)}</div>
+            </div>
+            <div class="detail-mini-card">
+              <div class="k">Ausências</div>
+              <div class="v">${Number(resumo.ausentes || 0)}</div>
+            </div>
+            <div class="detail-mini-card">
+              <div class="k">Justificadas</div>
+              <div class="v">${Number(resumo.justificadas || 0)}</div>
+            </div>
+            <div class="detail-mini-card">
+              <div class="k">É PCD?</div>
+              <div class="v">${escapeHtml(pcdTexto)}</div>
+            </div>
+          </div>
+          <div class="detail-highlight ${classeAlerta}">
+            <div class="detail-highlight-left">
+              <div class="title">Percentual de presença</div>
+              <div class="subtext">Baseado em ${totalLancamentos} lançamento(s) de frequência.${alertaTexto ? ' ' + alertaTexto : ''}</div>
+            </div>
+            <div class="detail-highlight-right">
+              <div class="value">${percentual}%</div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const camposFiltrados = (aluno.campos || []).filter(item => {
+        const nome = (item.campo || '').toLowerCase();
+        const blacklist = [
+          'foto2',
+          'merged doc id',
+          'merged doc url',
+          'link to merged doc',
+          'document merge status',
+          'status',
+          'servidor'
+        ];
+        return !blacklist.some(b => nome.includes(b));
+      });
+
+      const camposHtml = camposFiltrados.map(item => `
+        <div class="detail-field">
+          <div class="k">${escapeHtml(item.campo)}</div>
+          <div>${escapeHtml(item.valor || '-')}</div>
+        </div>
+      `).join('');
+
+      document.getElementById('detailContent').innerHTML = `
+        <div class="detail-grid">
+          <div>${foto}${resumoHtml}</div>
+          <div>
+            <h2 style="margin:0 0 6px;">${escapeHtml(aluno.nome || '-')}</h2>
+            <div class="mini">ID: ${escapeHtml(aluno.alunoId || '-')} · RG/CPF: ${escapeHtml(aluno.rgCpf || '-')}</div>
+            <div class="mini">Turno: ${escapeHtml(aluno.turno || '-')} · Horário: ${escapeHtml(aluno.horario || '-')} · Modalidade: ${escapeHtml(aluno.modalidade || '-')}</div>
+            <div class="mini">Status atual: ${escapeHtml(aluno.statusFrequencia || 'PENDENTE')}</div>
+
+            <div class="detail-observacao">
+              <label>Observação</label>
+              <textarea id="detailObservacao" rows="3" placeholder="Observação da frequência">${escapeHtml(aluno.observacao || '')}</textarea>
+            </div>
+
+            ${aluno && aluno.cracha ? `
+              <div class="btn-cracha-wrap">
+                <a href="${escapeHtml(aluno.cracha)}" target="_blank" rel="noopener noreferrer" class="btn-cracha">
+                  <span class="btn-cracha-icon">📄</span>
+                  <span>Abrir crachá</span>
+                </a>
+                <span class="btn-cracha-note">PDF do crachá do aluno</span>
+              </div>` : ''}
+
+            <div class="detail-actions">
+              <button class="btn-ok" onclick="salvarDetalheAluno('PRESENTE', this)">Presente</button>
+              <button class="btn-danger" onclick="salvarDetalheAluno('AUSENTE', this)">Ausente</button>
+              <button class="btn-warn" onclick="salvarDetalheAluno('AUSENCIA JUSTIFICADA', this)">Justificada</button>
+              <button class="btn-cracha" onclick="salvarDetalheAluno('ATIVO', this)">Ativo</button>
+              <button class="btn-cracha" onclick="salvarDetalheAluno('INATIVO', this)">Inativo</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-fields">
+          ${camposHtml}
+        </div>
+
+        <div class="detail-history">
+          <div class="detail-history-head">
+            <div>
+              <div class="detail-history-title">Histórico de presença</div>
+              <div class="detail-history-sub">Mostra apenas os campos relevantes da aba frequencia para este aluno.</div>
+            </div>
+            <button type="button" class="btn-cracha" onclick="carregarHistoricoAluno()">Ver histórico</button>
+          </div>
+          <div id="detailHistoryContent" class="muted">Clique em "Ver histórico" para carregar.</div>
+        </div>
+      `;
+    }
+
+    function carregarHistoricoAluno(){
+      if(!DETALHE_ATUAL) return;
+
+      const box = document.getElementById('detailHistoryContent');
+      if (box) box.innerHTML = '<div class="muted">Carregando histórico...</div>';
+
+      google.script.run
+        .withSuccessHandler(res => {
+          if(!res || !res.ok){
+            if (box) box.innerHTML = `<div class="msg erro" style="display:block;">${escapeHtml((res && res.mensagem) || 'Erro ao carregar histórico.')}</div>`;
+            return;
+          }
+
+          const lista = res.registros || [];
+          if(!lista.length){
+            if (box) box.innerHTML = '<div class="muted">Nenhum histórico encontrado para este aluno.</div>';
+            return;
+          }
+
+          box.innerHTML = `<div class="detail-history-list">${lista.map(item => `
+            <div class="detail-history-item">
+              <div class="detail-history-top">
+                <div class="detail-history-date">${escapeHtml(item.dataHora || '-')}</div>
+                <div>${badgeStatus(item.status || '')}</div>
+              </div>
+              <div class="detail-history-grid">
+                <div>
+                  <div class="detail-history-k">Modalidade</div>
+                  <div class="detail-history-v">${escapeHtml(item.modalidade || '-')}</div>
+                </div>
+                <div>
+                  <div class="detail-history-k">Turno / Horário</div>
+                  <div class="detail-history-v">${escapeHtml(item.turno || '-')} · ${escapeHtml(item.horario || '-')}</div>
+                </div>
+                <div>
+                  <div class="detail-history-k">Dias</div>
+                  <div class="detail-history-v">${escapeHtml(item.dias || '-')}</div>
+                </div>
+                <div>
+                  <div class="detail-history-k">Justificativa</div>
+                  <div class="detail-history-v">${escapeHtml(item.justificativa || '-')}</div>
+                </div>
+                <div>
+                  <div class="detail-history-k">É PCD?</div>
+                  <div class="detail-history-v">${escapeHtml(item.pcd || '-')}</div>
+                </div>
+                <div>
+                  <div class="detail-history-k">CID</div>
+                  <div class="detail-history-v">${escapeHtml(item.cid || '-')}</div>
+                </div>
+                <div>
+                  <div class="detail-history-k">Responsável</div>
+                  <div class="detail-history-v">${escapeHtml(item.responsavel || '-')}</div>
+                </div>
+                <div>
+                  <div class="detail-history-k">Cel/WhatsApp</div>
+                  <div class="detail-history-v">${escapeHtml(item.celular || '-')}</div>
+                </div>
+              </div>
+            </div>
+          `).join('')}</div>`;
+        })
+        .withFailureHandler(erro => {
+          if (box) box.innerHTML = `<div class="msg erro" style="display:block;">${escapeHtml((erro && erro.message) || 'Falha inesperada ao carregar histórico.')}</div>`;
+        })
+        .listarHistoricoAlunoPainel(TOKEN, {
+          alunoId: DETALHE_ATUAL.alunoId,
+          nome: DETALHE_ATUAL.nome,
+          rgCpf: DETALHE_ATUAL.rgCpf,
+          modalidade: DETALHE_ATUAL.modalidade,
+          turno: DETALHE_ATUAL.turno,
+          horario: DETALHE_ATUAL.horario,
+          dias: DETALHE_ATUAL.dias
+        });
+    }
+
+    function salvarDetalheAluno(statusFrequencia, botao){
+      if(!DETALHE_ATUAL) return;
+
+      const textoOriginal = botao ? botao.textContent : '';
+      if(botao){
+        botao.disabled = true;
+        botao.textContent = 'Salvando...';
+      }
+
+      google.script.run
+        .withSuccessHandler(res => {
+          if(botao){
+            botao.disabled = false;
+            botao.textContent = textoOriginal;
+          }
+
+          if(!res || !res.ok){
+            mostrarMsg('painelMsg','erro', (res && res.mensagem) || 'Erro ao salvar frequência.');
+            return;
+          }
+
+          mostrarMsg('painelMsg','ok', 'Frequência salva com sucesso.');
+          fecharDetalheAluno();
+          consultar();
+        })
+        .withFailureHandler(erro => {
+          if(botao){
+            botao.disabled = false;
+            botao.textContent = textoOriginal;
+          }
+          mostrarMsg('painelMsg','erro', (erro && erro.message) || 'Falha inesperada ao salvar frequência.');
+        })
+        .salvarFrequenciaPainel(TOKEN, {
+          dataAula: formatarDataParaBackend(document.getElementById('fDataAula').value),
+          alunoId: DETALHE_ATUAL.alunoId,
+          nome: DETALHE_ATUAL.nome,
+          rgCpf: DETALHE_ATUAL.rgCpf,
+          modalidade: DETALHE_ATUAL.modalidade,
+          turno: DETALHE_ATUAL.turno,
+          horario: DETALHE_ATUAL.horario,
+          dias: DETALHE_ATUAL.dias,
+          matricula: DETALHE_ATUAL.matricula,
+          pcd: DETALHE_ATUAL.pcd || '',
+          cid: DETALHE_ATUAL.cid || '',
+          nomeResponsavel: DETALHE_ATUAL.nomeResponsavel || '',
+          celWhatsapp: DETALHE_ATUAL.celWhatsapp || '',
+          statusFrequencia,
+          observacao: document.getElementById('detailObservacao').value.trim()
+        });
+    }
+
+
+    function salvarLinha(idx, statusFrequencia, botao){
+      const item = REGISTROS_ATUAIS[idx];
+      if(!item) return;
+
+      const observacao = document.getElementById(`obs_${idx}`).value.trim();
+
+      const payload = {
+        dataAula: formatarDataParaBackend(document.getElementById('fDataAula').value),
+        alunoId: item.alunoId,
+        nome: item.nome,
+        modalidade: item.modalidade,
+        turno: item.turno,
+        horario: item.horario,
+        dias: item.dias,
+        matricula: item.matricula,
+        statusFrequencia,
+        observacao
+      };
+
+      const textoOriginal = botao ? botao.textContent : '';
+      if(botao){
+        botao.disabled = true;
+        botao.textContent = 'Salvando...';
+      }
+      mostrarMsg('painelMsg','ok', `Salvando frequência de ${item.nome}...`);
+
+      google.script.run
+        .withSuccessHandler(res => {
+          if(botao){
+            botao.disabled = false;
+            botao.textContent = textoOriginal;
+          }
+
+          if(!res || !res.ok){
+            mostrarMsg('painelMsg','erro', (res && res.mensagem) || 'Erro ao salvar frequência.');
+            return;
+          }
+
+          mostrarMsg('painelMsg','ok', 'Frequência salva com sucesso.');
+          consultar(PAGINA_ATUAL);
+        })
+        .withFailureHandler(erro => {
+          if(botao){
+            botao.disabled = false;
+            botao.textContent = textoOriginal;
+          }
+          mostrarMsg('painelMsg','erro', (erro && erro.message) || 'Falha inesperada ao salvar frequência.');
+        })
+        .salvarFrequenciaPainel(TOKEN, payload);
+    }
+
+    function acaoEmMassa(statusFrequencia){
+      if(!REGISTROS_ATUAIS.length){
+        mostrarMsg('painelMsg','erro','Não há registros visíveis para aplicar a ação.');
+        return;
+      }
+
+      const lista = [...REGISTROS_ATUAIS];
+      let i = 0;
+
+      const proximo = () => {
+        if(i >= lista.length){
+          mostrarMsg('painelMsg','ok', 'Ação em massa concluída.');
+          consultar(PAGINA_ATUAL);
+          return;
+        }
+
+        const item = lista[i++];
+        google.script.run
+          .withSuccessHandler(() => proximo())
+          .withFailureHandler(erro => {
+            mostrarMsg('painelMsg','erro', (erro && erro.message) || 'Erro em ação em massa.');
+          })
+          .salvarFrequenciaPainel(TOKEN, {
+            dataAula: formatarDataParaBackend(document.getElementById('fDataAula').value),
+            alunoId: item.alunoId,
+            nome: item.nome,
+            modalidade: item.modalidade,
+            turno: item.turno,
+            horario: item.horario,
+            dias: item.dias,
+                matricula: item.matricula,
+            statusFrequencia,
+            observacao: item.observacao || ''
+          });
+      };
+
+      proximo();
+    }
+
+    function paginaAnterior(){
+      if(PAGINA_ATUAL > 1){
+        consultar(PAGINA_ATUAL - 1);
+      }
+    }
+
+    function proximaPagina(){
+      if(PAGINA_ATUAL < TOTAL_PAGINAS){
+        consultar(PAGINA_ATUAL + 1);
+      }
+    }
+
+    function toggleAuditoria(show){
+      const box = document.getElementById('auditBox');
+      if(show) box.classList.remove('hidden');
+      else box.classList.add('hidden');
+    }
+
+    function carregarAuditoria(){
+      toggleAuditoria(true);
+      const list = document.getElementById('auditList');
+      list.innerHTML = '<div class="audit-item muted">Carregando auditoria...</div>';
+
+      google.script.run
+        .withSuccessHandler(res => {
+          if(!res || !res.ok){
+            list.innerHTML = `<div class="audit-item">${escapeHtml((res && res.mensagem) || 'Erro ao carregar auditoria.')}</div>`;
+            return;
+          }
+
+          if(!res.registros || !res.registros.length){
+            list.innerHTML = '<div class="audit-item muted">Sem registros de auditoria.</div>';
+            return;
+          }
+
+          list.innerHTML = res.registros.map(item => `
+            <div class="audit-item">
+              <b>${escapeHtml(item.Acao || '-')}</b><br>
+              <span class="mini">${escapeHtml(item.DataHora || '-')} · ${escapeHtml(item.Nome || '-')} · ${escapeHtml(item.Perfil || '-')}</span><br>
+              <span>${escapeHtml(item.Detalhes || '-')}</span><br>
+              <span class="mini">Aluno: ${escapeHtml(item.AlunoNome || '-')} | Data: ${escapeHtml(item.DataAula || '-')}</span>
+            </div>
+          `).join('');
+        })
+        .withFailureHandler(erro => {
+          list.innerHTML = `<div class="audit-item">${escapeHtml((erro && erro.message) || 'Erro inesperado ao carregar auditoria.')}</div>`;
+        })
+        .listarAuditoria(TOKEN, 100);
+    }
+
+    function inicializarPainelRapido(){
+      setLoading('Preparando painel...');
+      setBusy(true);
+
+      google.script.run
+        .withSuccessHandler(res => {
+          setBusy(false);
+          setLoading('');
+
+          if(!res || !res.ok){
+            mostrarMsg('painelMsg','erro', (res && res.mensagem) || 'Erro ao inicializar o painel.');
+            return;
+          }
+
+          configurarEventosFiltros();
+          aplicarFiltrosPainel(res.filtros || {});
+          PAGINA_ATUAL = 1;
+          aplicarConsultaPainel(res.consulta || {});
+        })
+        .withFailureHandler(erro => {
+          setBusy(false);
+          setLoading('');
+          mostrarMsg('painelMsg','erro', (erro && erro.message) || 'Falha inesperada ao inicializar o painel.');
+        })
+        .carregarPainelInicial(TOKEN);
+    }
+
+    function iniciarPainelAposLogin(){
+      document.getElementById('trocaSenhaOverlay').classList.add('hidden');
+      document.body.style.overflow = '';
+      inicializarPainelRapido();
+    }
+
+    function salvarPrimeiraSenha(){
+      limparMsg('trocaSenhaMsg');
+
+      const novaSenha = document.getElementById('novaSenhaPrimeiroAcesso').value.trim();
+      const confirmarSenha = document.getElementById('confirmarSenhaPrimeiroAcesso').value.trim();
+
+      google.script.run
+        .withSuccessHandler(res => {
+          if(!res || !res.ok){
+            mostrarMsg('trocaSenhaMsg','erro', (res && res.mensagem) || 'Erro ao salvar nova senha.');
+            return;
+          }
+
+          mostrarMsg('trocaSenhaMsg','ok', 'Senha alterada com sucesso.');
+          iniciarPainelAposLogin();
+        })
+        .withFailureHandler(erro => {
+          mostrarMsg('trocaSenhaMsg','erro', (erro && erro.message) || 'Falha inesperada ao trocar a senha.');
+        })
+        .trocarSenhaPrimeiroAcesso(TOKEN, {
+          novaSenha,
+          confirmarSenha
+        });
+    }
+
+    function abrirOperadores(){
+      document.getElementById('operadoresOverlay').classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      carregarOperadores();
+    }
+
+    function fecharOperadores(){
+      document.getElementById('operadoresOverlay').classList.add('hidden');
+      document.body.style.overflow = '';
+      limparMsg('operadorMsg');
+    }
+
+    function carregarOperadores(){
+      google.script.run
+        .withSuccessHandler(res => {
+          const tbody = document.getElementById('tbodyOperadores');
+          if(!res || !res.ok){
+            tbody.innerHTML = `<tr><td colspan="6">${escapeHtml((res && res.mensagem) || 'Erro ao carregar operadores.')}</td></tr>`;
+            return;
+          }
+
+          OPERADORES_CACHE = res.registros || [];
+
+          if(!OPERADORES_CACHE.length){
+            tbody.innerHTML = '<tr><td colspan="6" class="muted">Nenhum operador cadastrado.</td></tr>';
+            return;
+          }
+
+          tbody.innerHTML = OPERADORES_CACHE.map((item, idx) => `
+            <tr>
+              <td>${escapeHtml(item.matricula || '-')}</td>
+              <td>${escapeHtml(item.nome || '-')}</td>
+              <td>${escapeHtml(item.perfil || '-')}</td>
+              <td>${escapeHtml(item.status || '-')}</td>
+              <td>${escapeHtml(item.trocarSenha || '-')}</td>
+              <td><button type="button" class="btn-cracha" onclick="editarOperador(${idx})">Editar</button></td>
+            </tr>
+          `).join('');
+        })
+        .withFailureHandler(erro => {
+          document.getElementById('tbodyOperadores').innerHTML = `<tr><td colspan="5">${escapeHtml((erro && erro.message) || 'Falha inesperada ao carregar operadores.')}</td></tr>`;
+        })
+        .listarOperadoresPainel(TOKEN);
+    }
+
+    function limparFormularioOperador(){
+      document.getElementById('opMatriculaOriginal').value = '';
+      document.getElementById('opMatricula').value = '';
+      document.getElementById('opNome').value = '';
+      document.getElementById('opSenha').value = '';
+      document.getElementById('opPerfil').value = 'OPERADOR';
+      document.getElementById('opStatus').value = 'ATIVO';
+      document.getElementById('opTrocarSenha').value = 'SIM';
+      document.getElementById('btnSalvarOperador').textContent = 'Salvar operador';
+      limparMsg('operadorMsg');
+    }
+
+    function editarOperador(idx){
+      const item = OPERADORES_CACHE[idx];
+      if(!item) return;
+
+      document.getElementById('opMatriculaOriginal').value = item.matricula || '';
+      document.getElementById('opMatricula').value = item.matricula || '';
+      document.getElementById('opNome').value = item.nome || '';
+      document.getElementById('opSenha').value = '';
+      document.getElementById('opPerfil').value = item.perfil || 'OPERADOR';
+      document.getElementById('opStatus').value = item.status || 'ATIVO';
+      document.getElementById('opTrocarSenha').value = item.trocarSenha || 'SIM';
+      document.getElementById('btnSalvarOperador').textContent = 'Atualizar operador';
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function salvarOperador(){
+      limparMsg('operadorMsg');
+
+      const payload = {
+        matriculaOriginal: document.getElementById('opMatriculaOriginal').value.trim(),
+        matricula: document.getElementById('opMatricula').value.trim(),
+        nome: document.getElementById('opNome').value.trim(),
+        senha: document.getElementById('opSenha').value.trim(),
+        perfil: document.getElementById('opPerfil').value,
+        status: document.getElementById('opStatus').value,
+        trocarSenha: document.getElementById('opTrocarSenha').value,
+        codigoServidor: ''
+      };
+
+      const runner = google.script.run
+        .withSuccessHandler(res => {
+          if(!res || !res.ok){
+            mostrarMsg('operadorMsg','erro', (res && res.mensagem) || 'Erro ao salvar operador.');
+            return;
+          }
+
+          mostrarMsg('operadorMsg','ok', payload.matriculaOriginal ? 'Operador atualizado com sucesso.' : 'Operador cadastrado com sucesso.');
+          limparFormularioOperador();
+          carregarOperadores();
+        })
+        .withFailureHandler(erro => {
+          mostrarMsg('operadorMsg','erro', (erro && erro.message) || 'Falha inesperada ao salvar operador.');
+        });
+
+      if (payload.matriculaOriginal) {
+        runner.atualizarOperadorPainel(TOKEN, payload);
+      } else {
+        runner.salvarOperadorPainel(TOKEN, payload);
+      }
+    }
+
+
+    configurarEnterLogin();
+  </script>
+</body>
+</html>
